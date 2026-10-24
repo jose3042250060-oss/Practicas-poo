@@ -1,102 +1,196 @@
-from estudiantes import Estudiantes
+from coches.cochesBD import *
 
 class App:
     def __init__(self):
-        self.main()
+        App.main()
 
-    def borrarPantalla(self):
+    @staticmethod
+    def borrarPantalla():
         print("\033c")
 
-    def esperarTecla(self):
-        input("... ¡Oprima cualquier tecla para continuar! ...")
+    @staticmethod
+    def espereTecla():
+        input("¡Oprima cualquier tecla para continuar...!")
 
-    def terminar(self):
-        input(".... :::: !GRACIAS POR UTILIZAR NUESTRO SISTEMA, \n vuelva pronto! ::::.... ")
-
-    def opcionInvalida(self):
-        input("\n\t .... ¡Opcion invalida oprima cualquier tecla para continuar !....")
-
-    def menu_acciones(self, tipo):
-        print(f"\n\t\t\t...::: Menu de {tipo} :::...\n")
-        opcion = input(f"\n\t 1.- Agregar \n\t 2.- Borrar \n\t 3.- Modificar \n\t 4.- Mostrar \n\t 5.- Regresar \n \t\tElige una Opcion: ").strip()
+    @staticmethod
+    def menu_acciones(tipo):
+        print(f"\n\t Menu de {tipo}\n")
+        opcion = input("\n\t 1.- Agregar \n\t 2.- Borrar \n\t 3.- Modificar \n\t 4.- Mostrar \n\t 5.- Salir \n\n\t Elige una opción: ").strip().lower()
         return opcion
 
-    def respuesta_sql(self, respuesta):
+    @staticmethod
+    def respuesta_sql(respuesta):
         if respuesta:
-            input(f"\n\t...¡Accion Realizada con Exito!...")
+            input("\n\t ...ACCION EXITOSA...")
         else:
-            input(f"\n\t...¡Esta Accion no pudo realizarse en este momento!...")
+            input("\n\t ...Esta acción no se puede realizar en este momento...")
 
-    def datos_estudiante(self, tipo):
-        self.borrarPantalla()
-        print(f"\n\t ...Ingresar los datos del {tipo}")
-        estudiantito = {}
-        estudiantito['nombre'] = input("Nombre: ").upper().strip()
-        estudiantito['nota'] = input("Nota (Calificacion): ").strip()
-        return estudiantito
+    @staticmethod
+    def datos_coches(tipo):
+        App.borrarPantalla()
+        print(f"\n\t\tIngresar datos del tipo: {tipo}")
+        cochesitos = {}
+        cochesitos['marca'] = input(f"\n\tNombre: ").upper().strip()
+        cochesitos['color'] = input(f"\tColor: ").upper().strip()
+        cochesitos['modelo'] = input(f"\tModelo: ").upper().strip()
+        cochesitos['velocidad'] = int(input(f"\tVelocidad: ").strip())
+        cochesitos['potencia'] = int(input(f"\tPotencia: ").strip())
+        cochesitos['asientos'] = int(input(f"\tNúmero de asientos: ").strip())
+        return cochesitos
 
-    def menu_estudiantes(self):
-        opc = True
-        while opc:
-            self.borrarPantalla()
-            opc = self.menu_acciones("Estudiantes")
-            match opc:
-                case '1':
-                    estudiantito = self.datos_estudiante("Estudiante")
-                    estudiante1 = Estudiantes(estudiantito['nombre'], estudiantito['nota'])
-                    respuesta = estudiante1.insertar()
-                    self.respuesta_sql(respuesta)
-                    del estudiante1
-
-                case '2':
-                    self.borrarPantalla()
-                    id = input("Ingrese el ID del estudiante a eliminar: ").strip()
-                    respuesta=Estudiantes.eliminar(id)
-                    self.respuesta_sql(respuesta)
-
-                case '3':
-                    self.borrarPantalla()
-                    id = input("Ingrese el ID del estudiante a actualizar: ").strip()
-                    estudiantito = self.datos_estudiante("Estudiante")
-                    estudiante1 = Estudiantes(estudiantito['nombre'], estudiantito['nota'])
-                    respuesta = estudiante1.actualizar(id)
-                    self.respuesta_sql(respuesta)
-                    del estudiante1
-
-                case '4':
-                    self.borrarPantalla()
-                    registros = Estudiantes.consultar()
-                    num_estudiante = 1
-                    if len(registros) > 0:
-                        for fila in registros:
-                            print(f"\nEstudiante #: {num_estudiante}\n\t\tID: {fila[0]}\n\t\tNombre: {fila[1]}\n\t\tNota (Calificacion): {fila[2]}")
-                            num_estudiante += 1
-                        self.esperarTecla()
-                    else:
-                        print("...¡No se encontro informacion en la BD!...")
-                        self.esperarTecla()
-
-                case '5':
-                    opc = False
-
-                case _:
-                    self.opcionInvalida()
-
-    def main(self):
+    @staticmethod
+    def menu_coche():
         opcion = True
         while opcion:
-            self.borrarPantalla()
-            opcion = input("\n\t\t ::: MENU PRINCIPAL :::\n\t1.- Estudiantes\n\t2.- Salir\n\tElige una opcion: ").lower().strip()
+            App.borrarPantalla()
+            opcion = App.menu_acciones("Coches")
             match opcion:
                 case '1':
-                    self.borrarPantalla()
-                    self.menu_estudiantes()
+                    App.borrarPantalla()
+                    cochesitos = App.datos_coches("Coche")
+                    coche1 = CochesBD(cochesitos['marca'], cochesitos['color'], cochesitos['modelo'], cochesitos['velocidad'], cochesitos['potencia'], cochesitos['asientos'])
+                    respuesta = coche1.insertar()
+                    App.respuesta_sql(respuesta)
+                    
                 case '2':
-                    self.borrarPantalla()
-                    self.terminar()
+                    App.borrarPantalla()
+                    id = input("\n\tIngresa el ID del coche a eliminar: ").strip()
+                    respuesta = CochesBD.eliminar(id)
+                    App.respuesta_sql(respuesta)
+                    
+                case '3':
+                    App.borrarPantalla()
+                    id = input("Ingresa el ID del coche a actualizar: ").strip()
+                    cochesitos = App.datos_coches("Coche")
+                    coche1 = CochesBD(cochesitos['marca'], cochesitos['color'], cochesitos['modelo'], cochesitos['velocidad'], cochesitos['potencia'], cochesitos['asientos'])
+                    respuesta = coche1.actualizar(id)
+                    App.respuesta_sql(respuesta)
+                    
+                case '4':
+                    App.borrarPantalla()
+                    registros = CochesBD.consultar()
+                    if len(registros) > 0:
+                        num_coches =+1
+                        for fila in registros:
+                            print(f"\n\tCoche # {num_coches}\n\t ID: {fila[0]}\n\t Marca: {fila[1]} \n\t Color: {fila[2]} \n\t Modelo: {fila[3]} \n\t Velocidad: {fila[4]} \n\t Potencia: {fila[5]} \n\t # Asientos: {fila[6]}")
+                            num_coches += 1
+                        App.espereTecla()
+                    else:
+                        print("\n\n\tNo existen datos que mostrar por el momento")
+                        App.espereTecla()
+                        
+                case '5':
                     opcion = False
                 case _:
-                    self.opcionInvalida()
+                    input("\n\n\t...Opción Inválida... Ingrese de nuevo porfis")
+
+    @staticmethod
+    def menu_camion():
+        opcion = True
+        while opcion:
+            App.borrarPantalla()
+            opcion = App.menu_acciones("Camiones")
+            match opcion:
+                case '1':
+                    cochesitos = App.datos_coches("Camión")
+                    coche1 = CochesBD(cochesitos['marca'], cochesitos['color'], cochesitos['modelo'], cochesitos['velocidad'], cochesitos['potencia'], cochesitos['asientos'])
+                    respuesta = coche1.insertar()
+                    App.respuesta_sql(respuesta)
+                case '2':
+                    App.borrarPantalla()
+                    id = input("\n\tIngresa el ID del camión a eliminar: ").strip()
+                    respuesta = CochesBD.eliminar(id)
+                    App.respuesta_sql(respuesta)
+                case '3':
+                    App.borrarPantalla()
+                    id = input("Ingresa el ID del camión a actualizar: ").strip()
+                    cochesitos = App.datos_coches("Camión")
+                    coche1 = CochesBD(cochesitos['marca'], cochesitos['color'], cochesitos['modelo'], cochesitos['velocidad'], cochesitos['potencia'], cochesitos['asientos'])
+                    respuesta = coche1.actualizar(id)
+                    App.respuesta_sql(respuesta)
+                case '4':
+                    App.borrarPantalla()
+                    registros = CochesBD.consultar()
+                    if len(registros) > 0:
+                        num_coches+1
+                        for fila in registros:
+                            print(f"\n\t\tCamión # {num_coches}\n\t ID: {fila[0]}\n\t Marca: {fila[1]} \n\t Color: {fila[2]} \n\t Modelo: {fila[3]} \n\t Velocidad: {fila[4]} \n\t Potencia: {fila[5]} \n\t Asientos: {fila[6]}")
+                            num_coches += 1
+                        App.espereTecla()
+                    else:
+                        print("\n\n\tNo existen datos que mostrar por el momento")
+                        App.espereTecla()
+                case '5':
+                    opcion = False
+                case _:
+                    input("\n\n\t...Opción Inválida... Ingrese de nuevo porfis")
+
+
+    @staticmethod
+    def menu_camioneta():
+        opcion = True
+        while opcion:
+            App.borrarPantalla()
+            opcion = App.menu_acciones("Camioneta")
+            match opcion:
+                case '1':
+                    cochesitos = App.datos_coches("Camioneta")
+                    coche1 = CochesBD(cochesitos['marca'], cochesitos['color'], cochesitos['modelo'], cochesitos['velocidad'], cochesitos['potencia'], cochesitos['asientos'])
+                    respuesta = coche1.insertar()
+                    App.respuesta_sql(respuesta)
+                case '2':
+                    App.borrarPantalla()
+                    id = input("\n\tIngresa el ID del camión a eliminar: ").strip()
+                    respuesta = CochesBD.eliminar(id)
+                    App.respuesta_sql(respuesta)
+                case '3':
+                    App.borrarPantalla()
+                    id = input("Ingresa el ID del camión a actualizar: ").strip()
+                    cochesitos = App.datos_coches("Camión")
+                    coche1 = CochesBD(cochesitos['marca'], cochesitos['color'], cochesitos['modelo'], cochesitos['velocidad'], cochesitos['potencia'], cochesitos['asientos'])
+                    respuesta = coche1.actualizar(id)
+                    App.respuesta_sql(respuesta)
+                case '4':
+                    App.borrarPantalla()
+                    registros = CochesBD.consultar()
+                    if len(registros) > 0:
+                        num_coches+1
+                        for fila in registros:
+                            print(f"\n\t\tCamión # {num_coches}\n\t ID: {fila[0]}\n\t Marca: {fila[1]} \n\t Color: {fila[2]} \n\t Modelo: {fila[3]} \n\t Velocidad: {fila[4]} \n\t Potencia: {fila[5]} \n\t Asientos: {fila[6]}")
+                            num_coches += 1
+                        App.espereTecla()
+                    else:
+                        print("\n\n\tNo existen datos que mostrar por el momento")
+                        App.espereTecla()
+                case '5':
+                    opcion = False
+                case _:
+                    input("\n\n\t...Opción Inválida... Ingrese de nuevo porfis")
+
+
+
+
+
+
+    @staticmethod
+    def main():
+        opcion = True
+        while opcion:
+            App.borrarPantalla()
+            opcion = input("\n\t\t\t...::: MENU PRINCIPAL :::... \n\n \t 1.- Coches \n\t 2.- Camiones \n\t 3.- Camionetas \n\t 4.- Salir \n\n\t Elige una opción: ").strip().lower()
+            match opcion:
+                case '1':
+                    App.menu_coche()
+                case '2':
+                    App.menu_camion() 
+                case '3':
+                    App.menu_camioneta() 
+                case '4':
+                    App.borrarPantalla()
+                    print("\n\t Salir del Sistema")
+                    opcion = False
+                case _:
+                    input("\n\t...Opción Inválida... Ingrese de nuevo porfis")
 
 if __name__ == "__main__":
-    app = App()
+    App()
